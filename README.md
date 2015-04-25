@@ -1,22 +1,22 @@
 # Radar JavaScript API
 
-As an alternative the mainstream Cedexis Radar client, this library gives site
-admins and developers greater control over the timing and nature of Radar and
-Impact sessions.  It is geared mainly for use in web applications featuring a
+As an alternative to the mainstream Cedexis Radar client, this library gives site
+admins and developers greater control over the timing and nature of Radar sessions
+and Impact events.  It is geared mainly for use in web applications featuring a
 single page interface, where multiple user actions can take place within the
 context of a single page view over the course of several minutes.
 
 The basic process is:
 
 1. Add the bootstrap JavaScript snippet to your site.
-2. Write code to trigger Radar and Impact events.
+2. Write code to trigger Radar sessions and Impact events.
 
 We'll describe this process in detail below.
 
 ## Reference Test Page
 
 In this document we refer to illustrations and code listings taken from a simple
-test, which you encouraged to examine.  It is available at
+test page, which you encouraged to examine, available at
 http://test-pages.s3.amazonaws.com/api/simple/simple.html.
 
 The page just contains two buttons.  When clicked, one executes a Radar session
@@ -35,9 +35,9 @@ files along with your other static assets and then reference it as an external
 script from within your page anywhere before other scripts that use the library.
 For example, suppose that:
 
-1. You host your JavaScript on assets.foo.com a directory called `js`.
-2. Your own site JavaScript lives in a file called site.js.  From this file
-   you'll need access to the API provided by the bootstap snippet.
+1. You host your JavaScript files on assets.foo.com in a directory called `js`.
+2. Your own site code lives in a file called site.js, and from this file
+   you need access to the API provided by the bootstap snippet.
 
 Then in your HTML, you add a link to the Radar bootstap file above the link to
 site.js like this:
@@ -58,7 +58,7 @@ site.js like this:
 ```
 
 The bootstrap snippet should very rarely change, so for best performance you can
-safely specify headers allowing it to be cached indefinitely by the browser and
+safely specify headers allowing it to be cached indefinitely by browser and
 intermediate caches (two weeks is a suggested minimum timeframe).  We include a
 version number in the filename to help manage any changes that may come about in
 the future.
@@ -71,9 +71,9 @@ the minified bootstrap file).
 **What to expect when the page loads**
 
 The role of the bootstrap code is to create some stub functions and then
-initiate the download of the actual Radar JS API code from radar.cedexis.com,
-which it does from an onload event handler.  You can see these downloads
-outlined in red in the image below.
+initiate the download of the actual Radar JavaScript API code from
+radar.cedexis.com, which it does from an onload event handler.  You can
+see these downloads outlined in red in the image below.
 
 ![Initial API JavaScript requests](./images/api_js_requests.png "Radar JavaScript downloads")
 
@@ -95,8 +95,8 @@ a Radar API call, not whether the API is actually ready to accept calls.
 
 The use of bootstrap code to generate stubs, downloading the actual API code
 from the window onload event, and making that code highly cacheable is meant to
-ensure that the client library rests as lightly on your site and is as easy to
-use as possible.
+ensure that the Radar API rests as lightly on your site and is as
+easy to use as possible.
 
 ## API Reference
 
@@ -153,8 +153,8 @@ var api = cedexis.api.create({
 });
 
 /**
- * Some function that returns the tenant ID
- * @return {string}
+ * A hypothetical function
+ * @return {string} the tenant ID
  */
 function getTenantId() {
     // Code to access the tenant ID from your web framework here...
@@ -177,7 +177,7 @@ properties:
 | Name | Type | Required | Description |
 | ---- | ---- | -------- | ----------- |
 | clearResourceTimings | boolean | false | If specified and set to `true`, the Radar client clears the Resource Timing cache before beginning the session.  This can be beneficial in long-running web applications where the cache is likely to be full, which would hamper the client's measurement functionality. |
-| resourceTimingBufferSize | number | false | If specified, the client requests that the browser set the Resource Timing cache to the given size.  Many browsers set this to 150 objects by default, which may not be enough for some use cases.  If you find that the Radar client fails to take measurements, first try using the *clearResourceTimings* setting.  But if that also fails, setting this to some number higher than 150 may also help. |
+| resourceTimingBufferSize | number | false | If specified, the client requests that the browser set the Resource Timing cache to the given size.  Many browsers set this to 150 objects by default, which may not be enough for some use cases.  If you find that the Radar client fails to take measurements, first try using the *clearResourceTimings* setting.  But if that also fails, setting this to some number higher than 150 may do the trick. |
 
 #### Description
 
@@ -232,13 +232,14 @@ reporting properties:
 This method of the RadarApi object reports an Impact event.  It also triggers a
 Radar session unless the option to disable it is used.
 
-For the `kpi` setting, you may include any key names and values that make
-sense for your use case.  We use items in a cart and their total value in the
-example below.  The only requirement is that for *conversion* Impact events,
-you should use the keyname of `conversion_kpi` and set it to a
-number, where the number indicates the type of conversion.  For example, you
-could designate 1 to mean purchase transactions, 2 to mean account sign-ups,
-etc.
+For the `kpi` setting, you may include any key names and values, which may be
+either strings or numbers, that make sense for your use case.  We use items
+in a cart and their total value in the example below.
+
+The only requirement is that for *conversion* Impact events, you should use the
+keyname of `conversion_kpi` and set it to a number, where the number indicates
+the type of conversion.  For example, you could designate 1 to mean purchase
+transactions, 2 to mean account sign-ups, etc.
 
 #### Examples
 
