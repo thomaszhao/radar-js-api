@@ -19,6 +19,12 @@ In this document we refer to illustrations and code listings taken from a simple
 test, which you encouraged to examine.  It is available at
 http://test-pages.s3.amazonaws.com/api/simple/simple.html.
 
+The page just contains two buttons.  When clicked, one executes a Radar session
+and the other reports an Impact event.
+
+The code listing behind this page, which shows how the button click handlers
+use the Radar API is available at http://test-pages.s3.amazonaws.com/api/simple/ui.js.
+
 ## Bootstrap Snippet
 
 This repository contains both [minified](./js/radar1.min.js) and
@@ -102,7 +108,7 @@ The cedexis.api.create function creates and returns a RadarApi object.
 
 #### Syntax
 
-cedexis.api.create(settings)
+**cedexis.api.create(settings)**
 
 #### Parameters
 
@@ -110,13 +116,13 @@ cedexis.api.create(settings)
 
 A JavaScript object having the following properties:
 
-| Name | Description |
-| ---- | ------------|
-| zoneId | blah |
-| customerId | blah |
-| cookieDomain | blah |
-| cookiePath | blah |
-| site | blah |
+| Name | Type | Required | Description |
+| ---- | ---- | -------- | ----------- |
+| zoneId | number | false | Your Cedexis Zone ID (defaults to 1) |
+| customerId | number | **true** | Your Cedexis Customer ID |
+| cookieDomain | string | false | The domain to be set on any cookies backing Impact event reporting.  Normally you should set this to your website domain prefaced with a period (.).<br><br>Example: .www.foo.com |
+| cookiePath | string | false | The pathname to be set on any cookies backing Impact event reporting.  If not set, defaults to "/". |
+| site | string | false | An optional metadatum to be attached to Impact event reports.  This would allow Impact events to be differentiated between different sites for the same customer, which may be necessary for certain use cases. |
 
 #### Description
 
@@ -126,31 +132,62 @@ reused throughout the life of the web application.
 
 #### Examples
 
+Create a simple RadarApi object for use with Radar and Impact on www.foo.com:
+
+```javascript
+var api = cedexis.api.create({
+    customerId: 12345,
+    cookieDomain: '.www.foo.com'
+});
+```
+
+Suppose you run a site that services multiple tenants and you want to
+differentiate between them based on runtime settings through the `site`
+property:
+
+```javascript
+var api = cedexis.api.create({
+    customerId: 12345,
+    cookieDomain: '.www.foo.com',
+    site: getTenantId()
+});
+
+/**
+ * Some function that returns the tenant ID
+ * @return {string}
+ */
+function getTenantId() {
+    // Code to access the tenant ID from your web framework here...
+}
+```
+
 ### RadarApi.prototype.radar()
 
 #### Summary
 
-#### Syntax
-
-#### Description
-
-#### Examples
-
-### RadarApi.prototype.impact()
-
-#### Summary
+Execute a Radar session.
 
 #### Syntax
 
+**api.radar([settings])**
+
+The optional `settings` object allows you to specify the following session
+properties:
+
+| Name | Type | Required | Description |
+| ---- | ---- | -------- | ----------- |
+| clearResourceTimings | boolean | false | If specified and set to `true`, the Radar client clears the Resource Timing cache before beginning the session.  This can be beneficial in long-running web applications where the cache is likely to be full, which would hamper the client's measurement functionality. |
+| resourceTimingBufferSize | number | false | If specified, the client requests that the browser set the Resource Timing cache to the given size.  Many browsers set this to 150 objects by default, which may not be enough for some use cases.  If you find that the Radar client fails to take measurements, first try using the *clearResourceTimings* setting.  But if that also fails, setting this to some number higher than 150 may also help. |
+
 #### Description
+
+This method of the RadarApi object executes a Radar session.
 
 #### Examples
 
-## Further Examples
-
-Perform a Radar session when the page loads and then again once per minute.
-Also instruct the client to clear and extend the cache of Resource Timing
-data made available by the browser (jQuery):
+Perform a Radar session when the page loads and then again once every two
+minutes.  Also instruct the client to clear and extend the cache of
+Resource Timing data made available by the browser (jQuery):
 
 ```javascript
 $(function() {
@@ -164,9 +201,63 @@ $(function() {
             clearResourceTimings: true,
             resourceTimingBufferSize: 300
         });
-        setTimeout(doRadarSession, 60000);
+        setTimeout(doRadarSession, 120000);
     }
 
     doRadarSession();
+});
+```
+
+### RadarApi.prototype.impact()
+
+#### Summary
+
+Report an Impact event.
+
+#### Syntax
+
+**api.impact([settings])**
+
+The optional `settings` object allows you to specify the following Impact
+reporting properties:
+
+| Name | Type | Required | Description |
+| ---- | ---- | -------- | ----------- |
+| category | string | false | If specified, the Impact event is assigned this category.  Some examples include "product", "payment", "order confirmation", etc.  |
+| kpi | Object | false | If specified, this should be set to a JavaScript object whose key/value pairs will be aggregated upon. |
+| radar | boolean | no | If specfied and set to `false`, the client does not execute a Radar session after reporting the Impact event. Defaults to `true` |
+
+#### Description
+
+This method of the RadarApi object reports an Impact event.  It also triggers a
+Radar session unless the option to disable it is used.
+
+For the `kpi` setting, you may include any key names and values that make
+sense for your use case.  We use items in a cart and their total value in the
+example below.  The only requirement is that for *conversion* Impact events,
+you should use the keyname of `conversion_kpi` and set it to a
+number, where the number indicates the type of conversion.  For example, you
+could designate 1 to mean purchase transactions, 2 to mean account sign-ups,
+etc.
+
+#### Examples
+
+Record an Impact event from www.foo.com.  Categorize the event as
+"PURCHASE CONFIRMATION" with specified KPIs:
+
+```javascript
+var api = cedexis.api.create({
+    customerId: 10660,
+    cookieDomain: '.www.foo.com'
+});
+
+api.impact({
+    "category": "PURCHASE CONFIRMATION",
+    "kpi": {
+        "conversion_kpi": 1,
+        "items": 2,
+        "value": 34.99,
+        "currency": "euro"
+    }
 });
 ```
