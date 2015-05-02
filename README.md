@@ -233,9 +233,11 @@ reporting properties:
 This method of the RadarApi object reports an Impact event.  It also triggers a
 Radar session unless the option to disable it is used.
 
-For the `kpi` setting, you may include any key names and values, which may be
-either strings or numbers, that make sense for your use case.  We use items
-in a cart and their total value in the example below.
+For the `kpi` setting, you may include any key names and values that make sense
+for your application.  A value may be either a string, number or boolean.
+
+You may wish to track whether an Impact event marks the start of a new session
+by including a KPI name of "new" set to `true`.
 
 #### Examples
 
@@ -256,6 +258,23 @@ api.impact({
         "items": 2,
         "value": 34.99,
         "currency": "euro"
+    }
+});
+```
+
+Record an Impact event from www.foo.com.  Categorize the event as "HOME" and
+specify that it signals the start of a new session for the user.
+
+```javascript
+var api = cedexis.api.create({
+    customerId: 10660,
+    cookieDomain: '.www.foo.com'
+});
+
+api.impact({
+    "category": "HOME",
+    "kpi": {
+        "new": true
     }
 });
 ```
