@@ -223,7 +223,8 @@ reporting properties:
 
 | Name | Type | Required | Description |
 | ---- | ---- | -------- | ----------- |
-| category | string | false | If specified, the Impact event is assigned this category.  Some examples include "product", "payment", "order confirmation", etc.  |
+| category | string | false | If specified, the Impact event is assigned this category.  Some examples include "product", "payment", "order confirmation", etc. |
+| conversion | string | false | If specified, the Impact event is assigned this conversion label. |
 | kpi | Object | false | If specified, this should be set to a JavaScript object whose key/value pairs will be aggregated upon. |
 | radar | boolean | no | If specfied and set to `false`, the client does not execute a Radar session after reporting the Impact event. Defaults to `true` |
 
@@ -236,15 +237,11 @@ For the `kpi` setting, you may include any key names and values, which may be
 either strings or numbers, that make sense for your use case.  We use items
 in a cart and their total value in the example below.
 
-The only requirement is that for *conversion* Impact events, you should use the
-keyname of `conversion_kpi` and set it to a number, where the number indicates
-the type of conversion.  For example, you could designate 1 to mean purchase
-transactions, 2 to mean account sign-ups, etc.
-
 #### Examples
 
 Record an Impact event from www.foo.com.  Categorize the event as
-"PURCHASE CONFIRMATION" with specified KPIs:
+"PURCHASE CONFIRMATION" with specified KPIs.  The event should also be marked
+as a conversion with the label "ORDER COMPLETE":
 
 ```javascript
 var api = cedexis.api.create({
@@ -254,8 +251,8 @@ var api = cedexis.api.create({
 
 api.impact({
     "category": "PURCHASE CONFIRMATION",
+    "conversion": "ORDER COMPLETE",
     "kpi": {
-        "conversion_kpi": 1,
         "items": 2,
         "value": 34.99,
         "currency": "euro"
