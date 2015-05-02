@@ -118,11 +118,11 @@ A JavaScript object having the following properties:
 
 | Name | Type | Required | Description |
 | ---- | ---- | -------- | ----------- |
-| zoneId | number | false | Your Cedexis Zone ID (defaults to 1) |
-| customerId | number | **true** | Your Cedexis Customer ID |
-| cookieDomain | string | false | The domain to be set on any cookies backing Impact event reporting.  Normally you should set this to your website domain prefaced with a period (.).<br><br>Example: .www.foo.com |
-| cookiePath | string | false | The pathname to be set on any cookies backing Impact event reporting.  If not set, defaults to "/". |
-| site | string | false | An optional metadatum to be attached to Impact event reports.  This would allow Impact events to be differentiated between different sites for the same customer, which may be necessary for certain use cases. |
+| zoneId | number | no | Your Cedexis Zone ID (defaults to 1) |
+| customerId | number | **yes** | Your Cedexis Customer ID |
+| cookieDomain | string | no | The domain to be set on any cookies backing Impact event reporting.  Normally you should set this to your website domain prefaced with a period (.).<br><br>Example: .www.foo.com |
+| cookiePath | string | no | The pathname to be set on any cookies backing Impact event reporting.  If not set, defaults to "/". |
+| site | string | no | An optional metadatum to be attached to Impact event reports.  This would allow Impact events to be differentiated between different sites for the same customer, which may be necessary for certain use cases. |
 
 #### Description
 
@@ -176,8 +176,8 @@ properties:
 
 | Name | Type | Required | Description |
 | ---- | ---- | -------- | ----------- |
-| clearResourceTimings | boolean | false | If specified and set to `true`, the Radar client clears the Resource Timing cache before beginning the session.  This can be beneficial in long-running web applications where the cache is likely to be full, which would hamper the client's measurement functionality. |
-| resourceTimingBufferSize | number | false | If specified, the client requests that the browser set the Resource Timing cache to the given size.  Many browsers set this to 150 objects by default, which may not be enough for some use cases.  If you find that the Radar client fails to take measurements, first try using the *clearResourceTimings* setting.  But if that also fails, setting this to some number higher than 150 may do the trick. |
+| clearResourceTimings | boolean | no | If specified and set to `true`, the Radar client clears the Resource Timing cache before beginning the session.  This can be beneficial in long-running web applications where the cache is likely to be full, which would hamper the client's measurement functionality. |
+| resourceTimingBufferSize | number | no | If specified, the client requests that the browser set the Resource Timing cache to the given size.  Many browsers set this to 150 objects by default, which may not be enough for some use cases.  If you find that the Radar client fails to take measurements, first try using the *clearResourceTimings* setting.  But if that also fails, setting this to some number higher than 150 may do the trick. |
 
 #### Description
 
@@ -223,9 +223,9 @@ reporting properties:
 
 | Name | Type | Required | Description |
 | ---- | ---- | -------- | ----------- |
-| category | string | false | If specified, the Impact event is assigned this category.  Some examples include "product", "payment", "order confirmation", etc. |
-| conversion | string | false | If specified, the Impact event is assigned this conversion label. |
-| kpi | Object | false | If specified, this should be set to a JavaScript object whose key/value pairs will be aggregated upon. |
+| category | string | no | If specified, the Impact event is assigned this category.  Some examples include "product", "payment", "order confirmation", etc. |
+| conversion | string | no | If specified, the Impact event is assigned this conversion label. |
+| kpi | Object | no | If specified, this should be set to a JavaScript object whose key/value pairs will be aggregated upon. |
 | radar | boolean | no | If specfied and set to `false`, the client does not execute a Radar session after reporting the Impact event. Defaults to `true` |
 
 #### Description
