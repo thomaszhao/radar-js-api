@@ -123,6 +123,8 @@ A JavaScript object having the following properties:
 | cookieDomain | string | no | The domain to be set on any cookies backing Impact event reporting.  Normally you should set this to your website domain prefaced with a period (.).<br><br>Example: .www.foo.com |
 | cookiePath | string | no | The pathname to be set on any cookies backing Impact event reporting.  If not set, defaults to "/". |
 | site | string | no | An optional metadatum to be attached to Impact event reports.  This would allow Impact events to be differentiated between different sites for the same customer, which may be necessary for certain use cases. |
+| clearResourceTimings | boolean | no | If given and set to `true`, every event generated will cause Resource Timing data to be purged. |
+| resourceTimingBufferSize | number | no | If given, every event generated will cause the Resource Timing object buffer to be set to the specified number. | |
 
 #### Description
 
@@ -132,12 +134,14 @@ reused throughout the life of the web application.
 
 #### Examples
 
-Create a simple RadarApi object for use with Radar and Impact on www.foo.com:
+Create a simple RadarApi object for use with Radar and Impact on www.foo.com
+where each event causes the Resource Timing data cache to be purged:
 
 ```javascript
 var api = cedexis.api.create({
     customerId: 12345,
-    cookieDomain: '.www.foo.com'
+    cookieDomain: '.www.foo.com',
+    clearResourceTimings: true
 });
 ```
 
@@ -176,8 +180,8 @@ properties:
 
 | Name | Type | Required | Description |
 | ---- | ---- | -------- | ----------- |
-| clearResourceTimings | boolean | no | If specified and set to `true`, the Radar client clears the Resource Timing cache before beginning the session.  This can be beneficial in long-running web applications where the cache is likely to be full, which would hamper the client's measurement functionality. |
-| resourceTimingBufferSize | number | no | If specified, the client requests that the browser set the Resource Timing cache to the given size.  Many browsers set this to 150 objects by default, which may not be enough for some use cases.  If you find that the Radar client fails to take measurements, first try using the *clearResourceTimings* setting.  But if that also fails, setting this to some number higher than 150 may do the trick. |
+| clearResourceTimings | boolean | no | If specified and set to `true`, the Radar client clears the Resource Timing cache before beginning the session.  This can be beneficial in long-running web applications where the cache is likely to be full, which would hamper the client's measurement functionality.<br><br>This setting is unnecessary if you've already specified it on the API object created by `cedexis.api.create()`.  |
+| resourceTimingBufferSize | number | no | If specified, the client requests that the browser set the Resource Timing cache to the given size.  Many browsers set this to 150 objects by default, which may not be enough for some use cases.  If you find that the Radar client fails to take measurements, first try using the *clearResourceTimings* setting.  But if that also fails, setting this to some number higher than 150 may do the trick.<br><br>This setting is unnecessary if you've already specified it on the API object created by `cedexis.api.create()`. |
 
 #### Description
 
@@ -227,8 +231,8 @@ reporting properties:
 | conversion | string | no | If specified, the Impact event is assigned this conversion label. |
 | kpi | Object | no | If specified, this should be set to a JavaScript object whose key/value pairs will be aggregated upon. |
 | radar | boolean | no | If specfied and set to `false`, the client does not execute a Radar session after reporting the Impact event. Defaults to `true` |
-| clearResourceTimings | boolean | no | This argument has the same meaning and effect as the setting by the same name of the api.radar function. |
-| resourceTimingBufferSize | number | no | This argument has the same meaning and effect as the setting by the same name of the api.radar function. |
+| clearResourceTimings | boolean | no | This argument has the same meaning and effect as the setting by the same name of the api.radar function.<br><br>This setting is unnecessary if you've already specified it on the API object created by `cedexis.api.create()`. |
+| resourceTimingBufferSize | number | no | This argument has the same meaning and effect as the setting by the same name of the api.radar function.<br><br>This setting is unnecessary if you've already specified it on the API object created by `cedexis.api.create()`. |
 
 #### Description
 
