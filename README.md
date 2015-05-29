@@ -227,6 +227,8 @@ reporting properties:
 | conversion | string | no | If specified, the Impact event is assigned this conversion label. |
 | kpi | Object | no | If specified, this should be set to a JavaScript object whose key/value pairs will be aggregated upon. |
 | radar | boolean | no | If specfied and set to `false`, the client does not execute a Radar session after reporting the Impact event. Defaults to `true` |
+| clearResourceTimings | boolean | no | This argument has the same meaning and effect as the setting by the same name of the api.radar function. |
+| resourceTimingBufferSize | number | no | This argument has the same meaning and effect as the setting by the same name of the api.radar function. |
 
 #### Description
 
@@ -258,7 +260,8 @@ api.impact({
         "items": 2,
         "value": 34.99,
         "currency": "euro"
-    }
+    },
+    "clearResourceTimings": true
 });
 ```
 
@@ -275,6 +278,7 @@ api.impact({
     "category": "HOME",
     "kpi": {
         "new": true
-    }
+    },
+    "clearResourceTimings": true
 });
 ```
