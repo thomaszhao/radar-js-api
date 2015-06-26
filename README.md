@@ -123,8 +123,7 @@ A JavaScript object having the following properties:
 | cookieDomain | string | no | The domain to be set on any cookies backing Impact event reporting.  Normally you should set this to your website domain prefaced with a period (.).<br><br>Example: .www.foo.com |
 | cookiePath | string | no | The pathname to be set on any cookies backing Impact event reporting.  If not set, defaults to "/". |
 | site | string | no | An optional metadatum to be attached to Impact event reports.  This would allow Impact events to be differentiated between different sites for the same customer, which may be necessary for certain use cases. |
-| clearResourceTimings | boolean | no | If given and set to `true`, every event generated will cause Resource Timing data to be purged. |
-| resourceTimingBufferSize | number | no | If given, every event generated will cause the Resource Timing object buffer to be set to the specified number. | |
+| logging | boolean | no | If given and set to `true`, the client will send limited output to the browser console.  Useful to see Impact data being reported. |
 
 #### Description
 
@@ -132,18 +131,18 @@ The RadarApi object returned by cedexis.api.create() bears methods used to
 invoke Radar sessions and report Impact events.  This should be stored and
 reused throughout the life of the web application.
 
-#### Examples
+###### Example 1
 
-Create a simple RadarApi object for use with Radar and Impact on www.foo.com
-where each event causes the Resource Timing data cache to be purged:
+Create a simple RadarApi object for use with Radar and Impact on www.foo.com:
 
 ```javascript
 var api = cedexis.api.create({
     customerId: 12345,
-    cookieDomain: '.www.foo.com',
-    clearResourceTimings: true
+    cookieDomain: '.www.foo.com'
 });
 ```
+
+###### Example 2
 
 Suppose you run a site that services multiple tenants and you want to
 differentiate between them based on runtime settings through the `site`
@@ -165,6 +164,22 @@ function getTenantId() {
 }
 ```
 
+###### Example 3
+
+Enable logging in order to see Impact data in the browser console:
+
+```javascript
+var api = cedexis.api.create({
+    customerId: 12345,
+    cookieDomain: '.www.foo.com',
+    logging: true
+});
+```
+
+Produces output in the browser console whenever Impact data is sent:
+
+![Impact data in console](./images/impact_output.png "Impact console output")
+
 ### RadarApi.prototype.radar()
 
 #### Summary
@@ -173,38 +188,26 @@ Execute a Radar session.
 
 #### Syntax
 
-**api.radar([settings])**
-
-The optional `settings` object allows you to specify the following session
-properties:
-
-| Name | Type | Required | Description |
-| ---- | ---- | -------- | ----------- |
-| clearResourceTimings | boolean | no | If specified and set to `true`, the Radar client clears the Resource Timing cache before beginning the session.  This can be beneficial in long-running web applications where the cache is likely to be full, which would hamper the client's measurement functionality.<br><br>This setting is unnecessary if you've already specified it on the API object created by `cedexis.api.create()`.  |
-| resourceTimingBufferSize | number | no | If specified, the client requests that the browser set the Resource Timing cache to the given size.  Many browsers set this to 150 objects by default, which may not be enough for some use cases.  If you find that the Radar client fails to take measurements, first try using the *clearResourceTimings* setting.  But if that also fails, setting this to some number higher than 150 may do the trick.<br><br>This setting is unnecessary if you've already specified it on the API object created by `cedexis.api.create()`. |
+**api.radar()**
 
 #### Description
 
 This method of the RadarApi object executes a Radar session.
 
-#### Examples
+###### Example 1
 
 Perform a Radar session when the page loads and then again once every two
-minutes.  Also instruct the client to clear and extend the cache of
-Resource Timing data made available by the browser (jQuery):
+minutes (jQuery):
 
 ```javascript
 $(function() {
     var api = cedexis.api.create({
         zoneId: 1,
-        customerId: 10660
+        customerId: 12345
     });
 
     function doRadarSession() {
-        api.radar({
-            clearResourceTimings: true,
-            resourceTimingBufferSize: 300
-        });
+        api.radar();
         setTimeout(doRadarSession, 120000);
     }
 
@@ -231,8 +234,6 @@ reporting properties:
 | conversion | string | no | If specified, the Impact event is assigned this conversion label. |
 | kpi | Object | no | If specified, this should be set to a JavaScript object whose key/value pairs will be aggregated upon. |
 | radar | boolean | no | If specfied and set to `false`, the client does not execute a Radar session after reporting the Impact event. Defaults to `true` |
-| clearResourceTimings | boolean | no | This argument has the same meaning and effect as the setting by the same name of the api.radar function.<br><br>This setting is unnecessary if you've already specified it on the API object created by `cedexis.api.create()`. |
-| resourceTimingBufferSize | number | no | This argument has the same meaning and effect as the setting by the same name of the api.radar function.<br><br>This setting is unnecessary if you've already specified it on the API object created by `cedexis.api.create()`. |
 
 #### Description
 
@@ -245,7 +246,7 @@ for your application.  A value may be either a string, number or boolean.
 You may wish to track whether an Impact event marks the start of a new session
 by including a KPI name of "new" set to `true`.
 
-#### Examples
+###### Example 1
 
 Record an Impact event from www.foo.com.  Categorize the event as
 "PURCHASE CONFIRMATION" with specified KPIs.  The event should also be marked
@@ -253,7 +254,7 @@ as a conversion with the label "ORDER COMPLETE":
 
 ```javascript
 var api = cedexis.api.create({
-    customerId: 10660,
+    customerId: 12345
     cookieDomain: '.www.foo.com'
 });
 
@@ -264,17 +265,18 @@ api.impact({
         "items": 2,
         "value": 34.99,
         "currency": "euro"
-    },
-    "clearResourceTimings": true
+    }
 });
 ```
+
+###### Example 2
 
 Record an Impact event from www.foo.com.  Categorize the event as "HOME" and
 specify that it signals the start of a new session for the user.
 
 ```javascript
 var api = cedexis.api.create({
-    customerId: 10660,
+    customerId: 12345
     cookieDomain: '.www.foo.com'
 });
 
@@ -282,7 +284,6 @@ api.impact({
     "category": "HOME",
     "kpi": {
         "new": true
-    },
-    "clearResourceTimings": true
+    }
 });
 ```
